@@ -10,6 +10,11 @@ class LibrarySpec extends FunSuite {
     library.findBookByTitle("Life") shouldBe List(Book("Life of Pi", "Martel, Yann", "nggzbsum"), Book("You are What You Eat:The Plan That Will Change Your Life", "McKeith, Gillian","xskevg"))
   }
 
+  test("#findBookByAuthor") {
+    val library = new com.company.library.Library()
+    library.findBookByAuthor("Khaled") shouldBe List(Book("Kite Runner,The", "Hosseini, Khaled", "brldgqczq"), Book("Thousand Splendid Suns,A", "Hosseini, Khaled", "itlizwzbz"))
+  }
+
   test("#findBookByIsbn find book by full ISBN") {
     val library = new com.company.library.Library()
     library.findBookByIsbn("pidtkl") shouldBe (Book("Da Vinci Code,The", "Brown, Dan", "pidtkl"))
