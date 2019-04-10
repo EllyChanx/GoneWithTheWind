@@ -20,6 +20,13 @@ class LibrarySpec extends FunSuite {
     library.findBookByIsbn("pidtkl") shouldBe (Book("Da Vinci Code,The", "Brown, Dan", "pidtkl"))
   }
 
+  test("#findBookByTitle, #findBookByAuthor, #findBookByIsbn for reference books") {
+    val library = new com.company.library.Library()
+    library.findBookByTitle("Ref") shouldBe List(Book("Reference Book 1", "Coffee", "qwerty", true), Book("Reference Book 2", "Coffee", "asdfgh", true), Book("Reference Book 3", "Mocha", "zxcvbn", true))
+    library.findBookByAuthor("Coffe") shouldBe List(Book("Reference Book 1", "Coffee", "qwerty", true), Book("Reference Book 2", "Coffee", "asdfgh", true))
+    library.findBookByIsbn("zxcvbn") shouldBe Book("Reference Book 3", "Mocha", "zxcvbn", true)
+  }
+
   test("#isBookBorrowed borrow non-existed book return error") {
     val library = new com.company.library.Library()
     val nonExistBook = Book("a book", "an author", "a isbn")
