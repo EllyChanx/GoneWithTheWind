@@ -30,14 +30,15 @@ class Library {
     Books.all.filter(_.ISBN == isbn).head
   }
 
-  def borrowBook(book: Book): Boolean = {
+  def borrowBook(book: Book): String = {
+    if (book.reference) throw new InternalError("Reference book cannot be borrowed!")
     this.isBookBorrowed.get(book) match {
       case Some(borrowed) => {
         if (borrowed) {
-          throw new InternalError("Already borrowed this book!!")
+          throw new InternalError("Already borrowed this book!")
         } else {
           this.isBookBorrowed(book) = true
-          this.isBookBorrowed(book)
+          book + "is borrowed successfully"
         }
       }
       case None => throw new NoSuchElementException("Book doesn't exist!")

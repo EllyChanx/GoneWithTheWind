@@ -32,11 +32,13 @@ class LibrarySpec extends FunSuite {
     library.isBookBorrowed(book) shouldBe false
     library.borrowBook(book)
     library.isBookBorrowed(book) shouldBe true
-    the [InternalError] thrownBy(library.borrowBook(book)) should have message "Already borrowed this book!!"
+    the [InternalError] thrownBy(library.borrowBook(book)) should have message "Already borrowed this book!"
   }
 
-//  test("") {
-//                  ???
-//  }
+  test("#borrowBook cannot borrow reference book") {
+    val library = new com.company.library.Library()
+    val refBook = Book("Reference Book 3", "Mocha", "zxcvbn", true)
+    the [InternalError] thrownBy(library.borrowBook(refBook)) should have message "Reference book cannot be borrowed!"
+  }
 
 }
