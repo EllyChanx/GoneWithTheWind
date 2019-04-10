@@ -9,8 +9,8 @@ class Library {
 
   val authorMap:immutable.Map[String, List[Book]] = Books.all.groupBy(book => book.author)
 
-  val isBookBorrowed:mutable.HashMap[Book, Boolean] = mutable.HashMap(
-    Books.all.map(x => (x -> false)): _*
+  val isBookAvailable:mutable.HashMap[Book, Boolean] = mutable.HashMap(
+    Books.all.map(x => (x -> true)): _*
   )
 
   def findBookByTitle(title: String): List[Book] = {
@@ -32,13 +32,13 @@ class Library {
 
   def borrowBook(book: Book): String = {
     if (book.reference) throw new InternalError("Reference book cannot be borrowed!")
-    this.isBookBorrowed.get(book) match {
-      case Some(borrowed) => {
-        if (borrowed) {
+    this.isBookAvailable.get(book) match {
+      case Some(isAvailable) => {
+        if (!isAvailable) {
           throw new InternalError("Already borrowed this book!")
         } else {
-          this.isBookBorrowed(book) = true
-          book + "is borrowed successfully"
+          this.isBookAvailable(book) = false
+          s"${book.title} - Borrowed Successfully"
         }
       }
       case None => throw new NoSuchElementException("Book doesn't exist!")

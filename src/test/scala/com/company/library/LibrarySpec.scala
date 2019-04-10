@@ -30,15 +30,15 @@ class LibrarySpec extends FunSuite {
   test("#isBookBorrowed borrow non-existed book return error") {
     val library = new com.company.library.Library()
     val nonExistBook = Book("a book", "an author", "a isbn")
-    an [NoSuchElementException] should be thrownBy(library.isBookBorrowed(nonExistBook))
+    an [NoSuchElementException] should be thrownBy(library.isBookAvailable(nonExistBook))
   }
 
   test("#borrowBook can borrow book if book available") {
     val library = new com.company.library.Library()
     val book = Book("Da Vinci Code,The", "Brown, Dan", "pidtkl")
-    library.isBookBorrowed(book) shouldBe false
-    library.borrowBook(book)
-    library.isBookBorrowed(book) shouldBe true
+    library.isBookAvailable(book) shouldBe true
+    library.borrowBook(book) shouldBe "Da Vinci Code,The - Borrowed Successfully"
+    library.isBookAvailable(book) shouldBe false
     the [InternalError] thrownBy(library.borrowBook(book)) should have message "Already borrowed this book!"
   }
 
