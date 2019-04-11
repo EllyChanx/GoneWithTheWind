@@ -19,7 +19,7 @@ class LibrarySpec extends FunSuite with BeforeAndAfterEach {
   }
 
   test("#findBookByTitle by partial title") {
-    library.findBookByTitle("Life") shouldBe List(book2, Book("You are What You Eat:The Plan That Will Change Your Life", "McKeith, Gillian", "xskevg"))
+    library.findBookByTitle("Life") shouldBe List(Book("You are What You Eat:The Plan That Will Change Your Life", "McKeith, Gillian", "xskevg"), book2)
   }
 
   test("#findBookByAuthor by partial author") {
@@ -31,7 +31,7 @@ class LibrarySpec extends FunSuite with BeforeAndAfterEach {
   }
 
   test("#findBookByTitle, #findBookByAuthor, #findBookByIsbn for reference books") {
-    library.findBookByTitle("Ref") shouldBe List(Book("Reference Book 1", "Coffee", "qwerty", reference = true), Book("Reference Book 2", "Coffee", "asdfgh", reference = true), Book("Reference Book 3", "Mocha", "zxcvbn", reference = true))
+    library.findBookByTitle("Ref") shouldBe List(Book("Reference Book 2", "Coffee", "asdfgh", reference = true), Book("Reference Book 3", "Mocha", "zxcvbn", reference = true), Book("Reference Book 1", "Coffee", "qwerty", reference = true))
     library.findBookByAuthor("Coffe") shouldBe List(Book("Reference Book 1", "Coffee", "qwerty", reference = true), Book("Reference Book 2", "Coffee", "asdfgh", reference = true))
     library.findBookByIsbn("zxcvbn") shouldBe Book("Reference Book 3", "Mocha", "zxcvbn", reference = true)
   }
@@ -52,7 +52,7 @@ class LibrarySpec extends FunSuite with BeforeAndAfterEach {
 
   test("#borrowBook - Error Case: borrow twice") {
     library.borrowBook(book1, borrower)
-    the[InternalError] thrownBy library.borrowBook(book1, borrower) should have message "Already borrowed this book!"
+    the[Exception] thrownBy library.borrowBook(book1, borrower) should have message "Already borrowed this book!"
   }
 
   test("#returnBook book availability become true after return") {
@@ -64,8 +64,8 @@ class LibrarySpec extends FunSuite with BeforeAndAfterEach {
   }
 
   test("#returnBook - Error Case: reference book / book never borrowed") {
-    the[InternalError] thrownBy library.returnBook(refBook) should have message "Book already on shelf!"
-    the[InternalError] thrownBy library.returnBook(book1) should have message "Book already on shelf!"
+    the[Exception] thrownBy library.returnBook(refBook) should have message "Book already on shelf!"
+    the[Exception] thrownBy library.returnBook(book1) should have message "Book already on shelf!"
   }
 
   test("#returnBook - Error Case: non-existed book") {

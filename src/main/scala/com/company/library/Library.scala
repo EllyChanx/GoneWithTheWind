@@ -8,26 +8,32 @@ import java.time.LocalDate
 class Library {
 
   val authorMap:immutable.Map[String, List[Book]] = Books.all.groupBy(book => book.author)
+  val titleMap:immutable.Map[String, List[Book]] = Books.all.groupBy(book => book.title)
 
-  val isBookAvailable:mutable.HashMap[Book, Boolean] = mutable.HashMap(
+  var isBookAvailable:mutable.HashMap[Book, Boolean] = mutable.HashMap(
     Books.all.map(x => x -> true): _*
   )
 
-  val outBookStatus: mutable.Map[Book, List[outBook]] = mutable.Map[Book, List[outBook]]()
+  var outBookStatus: mutable.Map[Book, List[outBook]] = mutable.Map[Book, List[outBook]]()
   val borrowDate: LocalDate = LocalDate.now
   val dueDate: LocalDate = borrowDate.plusDays(14)
 
   def findBookByTitle(title: String): List[Book] = {
-    Books.all.filter(_.title.contains(title))
+    var matchTitleBooks = new ListBuffer[Book]()
+    val matchTitles = this.titleMap.keys.filter(_.contains(title))
+    matchTitles.foreach(title => this.titleMap.get(title) match {
+      case Some(value) => matchTitleBooks ++= value
+    })
+    matchTitleBooks.toList
   }
 
   def findBookByAuthor(author: String): List[Book] = {
-    val matchBooks = new ListBuffer[Book]()
+    var matchAuthorBooks = new ListBuffer[Book]()
     val matchAuthors = this.authorMap.keys.filter(_.contains(author))
     matchAuthors.foreach(author => this.authorMap.get(author) match {
-      case Some(value) => matchBooks ++= value
+      case Some(value) => matchAuthorBooks ++= value
     })
-    matchBooks.toList
+    matchAuthorBooks.toList
   }
 
   def findBookByIsbn(isbn: String): Book = {
@@ -40,13 +46,12 @@ class Library {
       case None => throw new NoSuchElementException("Book doesn't exist!")
       case Some(isAvailable) =>
         if (!isAvailable) {
-          throw new InternalError("Already borrowed this book!")
+          throw new Exception("Already borrowed this book!")
         } else {
           this.isBookAvailable(book) = false
           this.addOutBook(book, name)
           s"${book.title} - Borrowed Successfully"
         }
-
     }
   }
 
@@ -55,13 +60,12 @@ class Library {
       case None => throw new NoSuchElementException("Book doesn't exist!")
       case Some(isAvailable) =>
         if (isAvailable) {
-          throw new InternalError("Book already on shelf!")
+          throw new Exception("Book already on shelf!")
         } else {
           this.isBookAvailable(book) = true
           this.removeOutBook(book)
           s"${book.title} - Return Successfully"
         }
-
     }
   }
 
@@ -75,7 +79,7 @@ class Library {
   }
 
   def findLateOutBook():List[(Book, List[outBook])] = {
-    val dueBooks = new ListBuffer[(Book, List[outBook])]()
+    var dueBooks = new ListBuffer[(Book, List[outBook])]()
     this.outBookStatus.foreach(x =>
        if (x._2.head.dueDate isBefore LocalDate.now) dueBooks += x
     )
