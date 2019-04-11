@@ -69,4 +69,8 @@ class Library {
     this.outBookStatus += book -> newStatus
   }
 
+  def removeOutBook(book: Book): Unit = {
+    this.outBookStatus -= book
+  }
+
 }

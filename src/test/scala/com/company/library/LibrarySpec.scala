@@ -75,4 +75,10 @@ class LibrarySpec extends FunSuite with BeforeAndAfterEach {
     library.addOutBook(book, "Elly")
     library.outBookStatus.head shouldBe (book, List(outBook("Elly",LocalDate.now, LocalDate.now.plusDays(14))))
   }
+
+  test ("#removeOutBook remove borrowed book from outBookStatus") {
+    library.addOutBook(book, "Elly")
+    library.removeOutBook(book)
+    library.outBookStatus shouldBe Map()
+  }
 }
