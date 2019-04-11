@@ -18,15 +18,15 @@ class LibrarySpec extends FunSuite with BeforeAndAfterEach {
     refBook = Book("Reference Book 3", "Mocha", "zxcvbn", true)
   }
 
-  test("#findBookByTitle find book by partial title") {
+  test("#findBookByTitle by partial title") {
     library.findBookByTitle("Life") shouldBe List(Book("Life of Pi", "Martel, Yann", "nggzbsum"), Book("You are What You Eat:The Plan That Will Change Your Life", "McKeith, Gillian", "xskevg"))
   }
 
-  test("#findBookByAuthor") {
+  test("#findBookByAuthor by partial author") {
     library.findBookByAuthor("Khal") shouldBe List(Book("Kite Runner,The", "Hosseini, Khaled", "brldgqczq"), Book("Thousand Splendid Suns,A", "Hosseini, Khaled", "itlizwzbz"))
   }
 
-  test("#findBookByIsbn find book by full ISBN") {
+  test("#findBookByIsbn by full ISBN") {
     library.findBookByIsbn("pidtkl") shouldBe (Book("Da Vinci Code,The", "Brown, Dan", "pidtkl"))
   }
 
@@ -36,19 +36,23 @@ class LibrarySpec extends FunSuite with BeforeAndAfterEach {
     library.findBookByIsbn("zxcvbn") shouldBe Book("Reference Book 3", "Mocha", "zxcvbn", true)
   }
 
-  test("#isBookAvailable enter non-existed book return error") {
-    an[NoSuchElementException] should be thrownBy (library.isBookAvailable(nonExistBook))
+  test("#borrowBook - Error Case: non-existed book") {
+    the[NoSuchElementException] thrownBy(library.borrowBook(nonExistBook)) should have message "Book doesn't exist!"
   }
 
-  test("#borrowBook - book availability default: true; after borrow: false") {
+  test("#borrowBook - book availability change from true to false") {
     library.isBookAvailable(book) shouldBe true
     library.borrowBook(book) shouldBe "Da Vinci Code,The - Borrowed Successfully"
     library.isBookAvailable(book) shouldBe false
-    the[InternalError] thrownBy (library.borrowBook(book)) should have message "Already borrowed this book!"
   }
 
-  test("#borrowBook cannot borrow reference book") {
+  test("#borrowBook - Error Case: reference book") {
     the[InternalError] thrownBy (library.borrowBook(refBook)) should have message "Reference book cannot be borrowed!"
+  }
+
+  test("#borrowBook - Error Case: borrow twice") {
+    library.borrowBook(book)
+    the[InternalError] thrownBy (library.borrowBook(book)) should have message "Already borrowed this book!"
   }
 
   test("#returnBook book availability become true after return") {

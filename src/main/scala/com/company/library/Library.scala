@@ -17,6 +17,10 @@ class Library {
     Books.all.filter(_.title.contains(title))
   }
 
+//  def findBookByAuthor(author: String): List[Book] = {
+//    Books.all.filter(_.author.contains(author))
+//  }
+
   def findBookByAuthor(author: String): List[Book] = {
     val matchBooks = new ListBuffer[Book]()
     val matchAuthors = this.authorMap.keys.filter(_.contains(author))
@@ -26,6 +30,15 @@ class Library {
     matchBooks.toList
   }
 
+//  def findBookByAuthor(author: String) = {
+//    val matchingBooks = new ListBuffer[Book]()
+//    this.authorMap.filter(
+//      (p) => p._1.containsSlice(author)
+//    ).foldLeft(matchingBooks)(
+//      _ ++ _._2
+//    ).toList
+//  }
+
   def findBookByIsbn(isbn: String): Book = {
     Books.all.filter(_.ISBN == isbn).head
   }
@@ -33,6 +46,7 @@ class Library {
   def borrowBook(book: Book): String = {
     if (book.reference) throw new InternalError("Reference book cannot be borrowed!")
     this.isBookAvailable.get(book) match {
+      case None => throw new NoSuchElementException("Book doesn't exist!")
       case Some(isAvailable) => {
         if (!isAvailable) {
           throw new InternalError("Already borrowed this book!")
@@ -41,12 +55,12 @@ class Library {
           s"${book.title} - Borrowed Successfully"
         }
       }
-      case None => throw new NoSuchElementException("Book doesn't exist!")
     }
   }
 
   def returnBook(book: Book): String = {
     this.isBookAvailable.get(book) match {
+      case None => throw new NoSuchElementException("Book doesn't exist!")
       case Some(isAvailable) => {
         if (isAvailable) {
           throw new InternalError("Book already on shelf!")
@@ -55,7 +69,6 @@ class Library {
           s"${book.title} - Return Successfully"
         }
       }
-      case None => throw new NoSuchElementException("Book doesn't exist!")
     }
   }
 
