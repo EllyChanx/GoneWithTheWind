@@ -10,12 +10,12 @@ class Library {
   val authorMap:immutable.Map[String, List[Book]] = Books.all.groupBy(book => book.author)
 
   val isBookAvailable:mutable.HashMap[Book, Boolean] = mutable.HashMap(
-    Books.all.map(x => (x -> true)): _*
+    Books.all.map(x => x -> true): _*
   )
 
-  val outBookStatus = scala.collection.mutable.Map[Book, List[outBook]]()
-  val borrowDate = LocalDate.now
-  val dueDate = borrowDate.plusDays(14)
+  val outBookStatus: mutable.Map[Book, List[outBook]] = mutable.Map[Book, List[outBook]]()
+  val borrowDate: LocalDate = LocalDate.now
+  val dueDate: LocalDate = borrowDate.plusDays(14)
 
   def findBookByTitle(title: String): List[Book] = {
     Books.all.filter(_.title.contains(title))

@@ -7,12 +7,12 @@ import java.time.LocalDate
 class LibrarySpec extends FunSuite with BeforeAndAfterEach {
 
   var library: Library = _
-  var book1 = Book("Da Vinci Code,The", "Brown, Dan", "pidtkl")
-  var book2 = Book("Life of Pi", "Martel, Yann", "nggzbsum")
-  val refBook = Book("Reference Book 3", "Mocha", "zxcvbn", true)
+  var book1: Book = Book("Da Vinci Code,The", "Brown, Dan", "pidtkl")
+  var book2: Book = Book("Life of Pi", "Martel, Yann", "nggzbsum")
+  val refBook: Book = Book("Reference Book 3", "Mocha", "zxcvbn", reference = true)
   val nonExistBook = Book("a book", "an author", "an isbn")
   val borrower: String = "TesterEl"
-  val today = LocalDate.now
+  val today: LocalDate = LocalDate.now
 
   override def beforeEach(): Unit = {
     library = new com.company.library.Library() // reset library to clear the book status in hashes
@@ -27,17 +27,17 @@ class LibrarySpec extends FunSuite with BeforeAndAfterEach {
   }
 
   test("#findBookByIsbn by full ISBN") {
-    library.findBookByIsbn("pidtkl") shouldBe (Book("Da Vinci Code,The", "Brown, Dan", "pidtkl"))
+    library.findBookByIsbn("pidtkl") shouldBe Book("Da Vinci Code,The", "Brown, Dan", "pidtkl")
   }
 
   test("#findBookByTitle, #findBookByAuthor, #findBookByIsbn for reference books") {
-    library.findBookByTitle("Ref") shouldBe List(Book("Reference Book 1", "Coffee", "qwerty", true), Book("Reference Book 2", "Coffee", "asdfgh", true), Book("Reference Book 3", "Mocha", "zxcvbn", true))
-    library.findBookByAuthor("Coffe") shouldBe List(Book("Reference Book 1", "Coffee", "qwerty", true), Book("Reference Book 2", "Coffee", "asdfgh", true))
-    library.findBookByIsbn("zxcvbn") shouldBe Book("Reference Book 3", "Mocha", "zxcvbn", true)
+    library.findBookByTitle("Ref") shouldBe List(Book("Reference Book 1", "Coffee", "qwerty", reference = true), Book("Reference Book 2", "Coffee", "asdfgh", reference = true), Book("Reference Book 3", "Mocha", "zxcvbn", reference = true))
+    library.findBookByAuthor("Coffe") shouldBe List(Book("Reference Book 1", "Coffee", "qwerty", reference = true), Book("Reference Book 2", "Coffee", "asdfgh", reference = true))
+    library.findBookByIsbn("zxcvbn") shouldBe Book("Reference Book 3", "Mocha", "zxcvbn", reference = true)
   }
 
   test("#borrowBook - Error Case: non-existed book") {
-    the[NoSuchElementException] thrownBy(library.borrowBook(nonExistBook, borrower)) should have message "Book doesn't exist!"
+    the[NoSuchElementException] thrownBy library.borrowBook(nonExistBook, borrower) should have message "Book doesn't exist!"
   }
 
   test("#borrowBook - book availability change from true to false") {
@@ -47,12 +47,12 @@ class LibrarySpec extends FunSuite with BeforeAndAfterEach {
   }
 
   test("#borrowBook - Error Case: reference book") {
-    the[InternalError] thrownBy (library.borrowBook(refBook, borrower)) should have message "Reference book cannot be borrowed!"
+    the[InternalError] thrownBy library.borrowBook(refBook, borrower) should have message "Reference book cannot be borrowed!"
   }
 
   test("#borrowBook - Error Case: borrow twice") {
     library.borrowBook(book1, borrower)
-    the[InternalError] thrownBy (library.borrowBook(book1, borrower)) should have message "Already borrowed this book!"
+    the[InternalError] thrownBy library.borrowBook(book1, borrower) should have message "Already borrowed this book!"
   }
 
   test("#returnBook book availability become true after return") {
@@ -64,12 +64,12 @@ class LibrarySpec extends FunSuite with BeforeAndAfterEach {
   }
 
   test("#returnBook - Error Case: reference book / book never borrowed") {
-    the[InternalError] thrownBy (library.returnBook(refBook)) should have message "Book already on shelf!"
-    the[InternalError] thrownBy (library.returnBook(book1)) should have message "Book already on shelf!"
+    the[InternalError] thrownBy library.returnBook(refBook) should have message "Book already on shelf!"
+    the[InternalError] thrownBy library.returnBook(book1) should have message "Book already on shelf!"
   }
 
   test("#returnBook - Error Case: non-existed book") {
-    the[NoSuchElementException] thrownBy(library.returnBook(nonExistBook)) should have message "Book doesn't exist!"
+    the[NoSuchElementException] thrownBy library.returnBook(nonExistBook) should have message "Book doesn't exist!"
   }
 
   test("#addOutBook add borrowed book to outBookStatus") {
