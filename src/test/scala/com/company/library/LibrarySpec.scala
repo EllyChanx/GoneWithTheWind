@@ -2,6 +2,7 @@ package com.company.library
 
 import org.scalatest.Matchers._
 import org.scalatest.{BeforeAndAfterEach, FunSuite}
+import java.time._
 
 
 class LibrarySpec extends FunSuite with BeforeAndAfterEach {
@@ -10,6 +11,7 @@ class LibrarySpec extends FunSuite with BeforeAndAfterEach {
   var book: Book = _
   var nonExistBook: Book = _
   var refBook: Book = _
+  var borrower: String = "TesterEl"
 
   override def beforeEach(): Unit = {
     library = new com.company.library.Library()
@@ -37,27 +39,27 @@ class LibrarySpec extends FunSuite with BeforeAndAfterEach {
   }
 
   test("#borrowBook - Error Case: non-existed book") {
-    the[NoSuchElementException] thrownBy(library.borrowBook(nonExistBook)) should have message "Book doesn't exist!"
+    the[NoSuchElementException] thrownBy(library.borrowBook(nonExistBook, borrower)) should have message "Book doesn't exist!"
   }
 
   test("#borrowBook - book availability change from true to false") {
     library.isBookAvailable(book) shouldBe true
-    library.borrowBook(book) shouldBe "Da Vinci Code,The - Borrowed Successfully"
+    library.borrowBook(book, borrower) shouldBe "Da Vinci Code,The - Borrowed Successfully"
     library.isBookAvailable(book) shouldBe false
   }
 
   test("#borrowBook - Error Case: reference book") {
-    the[InternalError] thrownBy (library.borrowBook(refBook)) should have message "Reference book cannot be borrowed!"
+    the[InternalError] thrownBy (library.borrowBook(refBook, borrower)) should have message "Reference book cannot be borrowed!"
   }
 
   test("#borrowBook - Error Case: borrow twice") {
-    library.borrowBook(book)
-    the[InternalError] thrownBy (library.borrowBook(book)) should have message "Already borrowed this book!"
+    library.borrowBook(book, borrower)
+    the[InternalError] thrownBy (library.borrowBook(book, borrower)) should have message "Already borrowed this book!"
   }
 
   test("#returnBook book availability become true after return") {
     library.isBookAvailable(book) shouldBe true
-    library.borrowBook(book)
+    library.borrowBook(book, borrower)
     library.isBookAvailable(book) shouldBe false
     library.returnBook(book) shouldBe "Da Vinci Code,The - Return Successfully"
     library.isBookAvailable(book) shouldBe true
@@ -70,5 +72,10 @@ class LibrarySpec extends FunSuite with BeforeAndAfterEach {
 
   test ("#returnBook - Error Case: non-existed book") {
     the[NoSuchElementException] thrownBy(library.returnBook(nonExistBook)) should have message "Book doesn't exist!"
+  }
+
+  test ("#addOutBook add borrowed book to outBookStatus") {
+    library.addOutBook(book, "Elly")
+    library.outBookStatus.head shouldBe (book, List(bookStatus("Elly",LocalDate.now, LocalDate.now.plusDays(14))))
   }
 }

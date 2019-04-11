@@ -3,6 +3,9 @@ package com.company.library
 import scala.collection.mutable
 import scala.collection.immutable
 import scala.collection.mutable.ListBuffer
+import java.time._
+
+import scala.collection.mutable.{Map => MMap}
 
 
 class Library {
@@ -43,7 +46,7 @@ class Library {
     Books.all.filter(_.ISBN == isbn).head
   }
 
-  def borrowBook(book: Book): String = {
+  def borrowBook(book: Book, name: String): String = {
     if (book.reference) throw new InternalError("Reference book cannot be borrowed!")
     this.isBookAvailable.get(book) match {
       case None => throw new NoSuchElementException("Book doesn't exist!")
@@ -52,6 +55,7 @@ class Library {
           throw new InternalError("Already borrowed this book!")
         } else {
           this.isBookAvailable(book) = false
+          this.addOutBook(book, name)
           s"${book.title} - Borrowed Successfully"
         }
       }
@@ -70,6 +74,13 @@ class Library {
         }
       }
     }
+  }
+
+  val outBookStatus = scala.collection.mutable.Map[Book, List[bookStatus]]()
+
+  def addOutBook(book: Book, name: String): Unit = {
+    val newStatus = List(bookStatus(name, LocalDate.now, LocalDate.now.plusDays(14)))
+    this.outBookStatus += book -> newStatus
   }
 
 }
