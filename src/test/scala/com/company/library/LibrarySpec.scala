@@ -8,7 +8,8 @@ import java.time.LocalDate
 class LibrarySpec extends FunSuite with BeforeAndAfterEach {
 
   var library: Library = _
-  var book = Book("Da Vinci Code,The", "Brown, Dan", "pidtkl")
+  var book1 = Book("Da Vinci Code,The", "Brown, Dan", "pidtkl")
+  var book2 = Book("Life of Pi", "Martel, Yann", "nggzbsum")
   var refBook = Book("Reference Book 3", "Mocha", "zxcvbn", true)
   var nonExistBook = Book("a book", "an author", "an isbn")
   var borrower: String = "TesterEl"
@@ -18,7 +19,7 @@ class LibrarySpec extends FunSuite with BeforeAndAfterEach {
   }
 
   test("#findBookByTitle by partial title") {
-    library.findBookByTitle("Life") shouldBe List(Book("Life of Pi", "Martel, Yann", "nggzbsum"), Book("You are What You Eat:The Plan That Will Change Your Life", "McKeith, Gillian", "xskevg"))
+    library.findBookByTitle("Life") shouldBe List(book2, Book("You are What You Eat:The Plan That Will Change Your Life", "McKeith, Gillian", "xskevg"))
   }
 
   test("#findBookByAuthor by partial author") {
@@ -40,9 +41,9 @@ class LibrarySpec extends FunSuite with BeforeAndAfterEach {
   }
 
   test("#borrowBook - book availability change from true to false") {
-    library.isBookAvailable(book) shouldBe true
-    library.borrowBook(book, borrower) shouldBe "Da Vinci Code,The - Borrowed Successfully"
-    library.isBookAvailable(book) shouldBe false
+    library.isBookAvailable(book1) shouldBe true
+    library.borrowBook(book1, borrower) shouldBe "Da Vinci Code,The - Borrowed Successfully"
+    library.isBookAvailable(book1) shouldBe false
   }
 
   test("#borrowBook - Error Case: reference book") {
@@ -50,35 +51,44 @@ class LibrarySpec extends FunSuite with BeforeAndAfterEach {
   }
 
   test("#borrowBook - Error Case: borrow twice") {
-    library.borrowBook(book, borrower)
-    the[InternalError] thrownBy (library.borrowBook(book, borrower)) should have message "Already borrowed this book!"
+    library.borrowBook(book1, borrower)
+    the[InternalError] thrownBy (library.borrowBook(book1, borrower)) should have message "Already borrowed this book!"
   }
 
   test("#returnBook book availability become true after return") {
-    library.isBookAvailable(book) shouldBe true
-    library.borrowBook(book, borrower)
-    library.isBookAvailable(book) shouldBe false
-    library.returnBook(book) shouldBe "Da Vinci Code,The - Return Successfully"
-    library.isBookAvailable(book) shouldBe true
+    library.isBookAvailable(book1) shouldBe true
+    library.borrowBook(book1, borrower)
+    library.isBookAvailable(book1) shouldBe false
+    library.returnBook(book1) shouldBe "Da Vinci Code,The - Return Successfully"
+    library.isBookAvailable(book1) shouldBe true
   }
 
-  test ("#returnBook - Error Case: reference book / book never borrowed") {
+  test("#returnBook - Error Case: reference book / book never borrowed") {
     the[InternalError] thrownBy (library.returnBook(refBook)) should have message "Book already on shelf!"
-    the[InternalError] thrownBy (library.returnBook(book)) should have message "Book already on shelf!"
+    the[InternalError] thrownBy (library.returnBook(book1)) should have message "Book already on shelf!"
   }
 
-  test ("#returnBook - Error Case: non-existed book") {
+  test("#returnBook - Error Case: non-existed book") {
     the[NoSuchElementException] thrownBy(library.returnBook(nonExistBook)) should have message "Book doesn't exist!"
   }
 
-  test ("#addOutBook add borrowed book to outBookStatus") {
-    library.addOutBook(book, "Elly")
-    library.outBookStatus.head shouldBe (book, List(outBook("Elly",LocalDate.now, LocalDate.now.plusDays(14))))
+  test("#addOutBook add borrowed book to outBookStatus") {
+    library.addOutBook(book1, borrower)
+    library.outBookStatus.head shouldBe (book1, List(outBook(borrower,LocalDate.now, LocalDate.now.plusDays(14))))
   }
 
-  test ("#removeOutBook remove borrowed book from outBookStatus") {
-    library.addOutBook(book, "Elly")
-    library.removeOutBook(book)
+  test("#removeOutBook remove borrowed book from outBookStatus") {
+    library.addOutBook(book1, borrower)
+    library.removeOutBook(book1)
     library.outBookStatus shouldBe Map()
+  }
+
+  test("#borrowBook & #returnBook update #outBookStatus") {
+    library.borrowBook(book1, borrower)
+    library.borrowBook(book2, borrower)
+    library.outBookStatus.head shouldBe (book2, List(outBook(borrower,LocalDate.now, LocalDate.now.plusDays(14))))
+    library.outBookStatus.last shouldBe (book1, List(outBook(borrower,LocalDate.now, LocalDate.now.plusDays(14))))
+    library.returnBook(book1)
+    library.outBookStatus.head shouldBe (book2, List(outBook(borrower,LocalDate.now, LocalDate.now.plusDays(14))))
   }
 }

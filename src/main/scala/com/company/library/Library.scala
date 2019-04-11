@@ -58,6 +58,7 @@ class Library {
           throw new InternalError("Book already on shelf!")
         } else {
           this.isBookAvailable(book) = true
+          this.removeOutBook(book)
           s"${book.title} - Return Successfully"
         }
       }
