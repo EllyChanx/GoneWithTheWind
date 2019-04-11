@@ -38,7 +38,7 @@ class Library {
     if (book.reference) throw new InternalError("Reference book cannot be borrowed!")
     this.isBookAvailable.get(book) match {
       case None => throw new NoSuchElementException("Book doesn't exist!")
-      case Some(isAvailable) => {
+      case Some(isAvailable) =>
         if (!isAvailable) {
           throw new InternalError("Already borrowed this book!")
         } else {
@@ -46,14 +46,14 @@ class Library {
           this.addOutBook(book, name)
           s"${book.title} - Borrowed Successfully"
         }
-      }
+
     }
   }
 
   def returnBook(book: Book): String = {
     this.isBookAvailable.get(book) match {
       case None => throw new NoSuchElementException("Book doesn't exist!")
-      case Some(isAvailable) => {
+      case Some(isAvailable) =>
         if (isAvailable) {
           throw new InternalError("Book already on shelf!")
         } else {
@@ -61,7 +61,7 @@ class Library {
           this.removeOutBook(book)
           s"${book.title} - Return Successfully"
         }
-      }
+
     }
   }
 
@@ -72,6 +72,14 @@ class Library {
 
   def removeOutBook(book: Book): Unit = {
     this.outBookStatus -= book
+  }
+
+  def findLateOutBook():List[(Book, List[outBook])] = {
+    val dueBooks = new ListBuffer[(Book, List[outBook])]()
+    this.outBookStatus.foreach(x =>
+       if (x._2.head.dueDate isBefore LocalDate.now) dueBooks += x
+    )
+    dueBooks.toList
   }
 
 }

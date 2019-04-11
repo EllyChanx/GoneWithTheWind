@@ -4,15 +4,15 @@ import org.scalatest.Matchers._
 import org.scalatest.{BeforeAndAfterEach, FunSuite}
 import java.time.LocalDate
 
-
 class LibrarySpec extends FunSuite with BeforeAndAfterEach {
 
   var library: Library = _
   var book1 = Book("Da Vinci Code,The", "Brown, Dan", "pidtkl")
   var book2 = Book("Life of Pi", "Martel, Yann", "nggzbsum")
-  var refBook = Book("Reference Book 3", "Mocha", "zxcvbn", true)
-  var nonExistBook = Book("a book", "an author", "an isbn")
-  var borrower: String = "TesterEl"
+  val refBook = Book("Reference Book 3", "Mocha", "zxcvbn", true)
+  val nonExistBook = Book("a book", "an author", "an isbn")
+  val borrower: String = "TesterEl"
+  val today = LocalDate.now
 
   override def beforeEach(): Unit = {
     library = new com.company.library.Library() // reset library to clear the book status in hashes
@@ -86,9 +86,16 @@ class LibrarySpec extends FunSuite with BeforeAndAfterEach {
   test("#borrowBook & #returnBook update #outBookStatus") {
     library.borrowBook(book1, borrower)
     library.borrowBook(book2, borrower)
-    library.outBookStatus.head shouldBe (book2, List(outBook(borrower,LocalDate.now, LocalDate.now.plusDays(14))))
-    library.outBookStatus.last shouldBe (book1, List(outBook(borrower,LocalDate.now, LocalDate.now.plusDays(14))))
+    library.outBookStatus.head shouldBe (book2, List(outBook(borrower,today, today.plusDays(14))))
+    library.outBookStatus.last shouldBe (book1, List(outBook(borrower,today, today.plusDays(14))))
     library.returnBook(book1)
-    library.outBookStatus.head shouldBe (book2, List(outBook(borrower,LocalDate.now, LocalDate.now.plusDays(14))))
+    library.outBookStatus.head shouldBe (book2, List(outBook(borrower,today, today.plusDays(14))))
+  }
+
+  test("#findLateOutBook search due books from #outBookStatus") {
+    library.borrowBook(book1, borrower)
+    library.borrowBook(book2, borrower)
+    library.outBookStatus(book1) = List(outBook(borrower,today, today.minusDays(1)))
+    library.findLateOutBook() shouldBe List((book1,List(outBook(borrower,today, today.minusDays(1)))))
   }
 }
