@@ -110,4 +110,4 @@ object Books {
 }
 
 case class Book(title: String, author: String, ISBN: String, reference: Boolean = false)
-case class bookStatus(borrower: String, borrowDate: LocalDate, deadline: LocalDate)
+case class outBook(borrower: String, borrowDate: LocalDate, dueDate: LocalDate)

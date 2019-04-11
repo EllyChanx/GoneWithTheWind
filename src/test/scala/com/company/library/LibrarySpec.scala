@@ -2,22 +2,19 @@ package com.company.library
 
 import org.scalatest.Matchers._
 import org.scalatest.{BeforeAndAfterEach, FunSuite}
-import java.time._
+import java.time.LocalDate
 
 
 class LibrarySpec extends FunSuite with BeforeAndAfterEach {
 
   var library: Library = _
-  var book: Book = _
-  var nonExistBook: Book = _
-  var refBook: Book = _
+  var book = Book("Da Vinci Code,The", "Brown, Dan", "pidtkl")
+  var refBook = Book("Reference Book 3", "Mocha", "zxcvbn", true)
+  var nonExistBook = Book("a book", "an author", "an isbn")
   var borrower: String = "TesterEl"
 
   override def beforeEach(): Unit = {
-    library = new com.company.library.Library()
-    book = Book("Da Vinci Code,The", "Brown, Dan", "pidtkl")
-    nonExistBook = Book("a book", "an author", "an isbn")
-    refBook = Book("Reference Book 3", "Mocha", "zxcvbn", true)
+    library = new com.company.library.Library() // reset library to clear the book status in hashes
   }
 
   test("#findBookByTitle by partial title") {
@@ -76,6 +73,6 @@ class LibrarySpec extends FunSuite with BeforeAndAfterEach {
 
   test ("#addOutBook add borrowed book to outBookStatus") {
     library.addOutBook(book, "Elly")
-    library.outBookStatus.head shouldBe (book, List(bookStatus("Elly",LocalDate.now, LocalDate.now.plusDays(14))))
+    library.outBookStatus.head shouldBe (book, List(outBook("Elly",LocalDate.now, LocalDate.now.plusDays(14))))
   }
 }

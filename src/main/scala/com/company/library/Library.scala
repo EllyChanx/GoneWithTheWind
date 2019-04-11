@@ -3,10 +3,7 @@ package com.company.library
 import scala.collection.mutable
 import scala.collection.immutable
 import scala.collection.mutable.ListBuffer
-import java.time._
-
-import scala.collection.mutable.{Map => MMap}
-
+import java.time.LocalDate
 
 class Library {
 
@@ -16,13 +13,13 @@ class Library {
     Books.all.map(x => (x -> true)): _*
   )
 
+  val outBookStatus = scala.collection.mutable.Map[Book, List[outBook]]()
+  val borrowDate = LocalDate.now
+  val dueDate = borrowDate.plusDays(14)
+
   def findBookByTitle(title: String): List[Book] = {
     Books.all.filter(_.title.contains(title))
   }
-
-//  def findBookByAuthor(author: String): List[Book] = {
-//    Books.all.filter(_.author.contains(author))
-//  }
 
   def findBookByAuthor(author: String): List[Book] = {
     val matchBooks = new ListBuffer[Book]()
@@ -32,15 +29,6 @@ class Library {
     })
     matchBooks.toList
   }
-
-//  def findBookByAuthor(author: String) = {
-//    val matchingBooks = new ListBuffer[Book]()
-//    this.authorMap.filter(
-//      (p) => p._1.containsSlice(author)
-//    ).foldLeft(matchingBooks)(
-//      _ ++ _._2
-//    ).toList
-//  }
 
   def findBookByIsbn(isbn: String): Book = {
     Books.all.filter(_.ISBN == isbn).head
@@ -76,10 +64,8 @@ class Library {
     }
   }
 
-  val outBookStatus = scala.collection.mutable.Map[Book, List[bookStatus]]()
-
   def addOutBook(book: Book, name: String): Unit = {
-    val newStatus = List(bookStatus(name, LocalDate.now, LocalDate.now.plusDays(14)))
+    val newStatus = List(outBook(name, borrowDate, dueDate))
     this.outBookStatus += book -> newStatus
   }
 
