@@ -45,4 +45,18 @@ class Library {
     }
   }
 
+  def returnBook(book: Book): String = {
+    this.isBookAvailable.get(book) match {
+      case Some(isAvailable) => {
+        if (isAvailable) {
+          throw new InternalError("Book already on shelf!")
+        } else {
+          this.isBookAvailable(book) = true
+          s"${book.title} - Return Successfully"
+        }
+      }
+      case None => throw new NoSuchElementException("Book doesn't exist!")
+    }
+  }
+
 }
