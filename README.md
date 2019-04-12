@@ -54,3 +54,6 @@ Currently, books' borrow histories are not stored because the returning book wil
 Map[book: Book -> List[outBookStatus(borrower, borrowDate, dueDate, returnStatus)]]  
 ```
 When user returns a book, update `returnStatus` instead of removing it completely. After updating `.addOutBook` and `.findLateOutBook`'s verification, the `.outBook` map will be able to store borrow history for all the books.
+
+### Fine Calculation
+Fine for overdue book is not calculated since the rate is not specified. After the rate is confirmed, this can be implemented by using `.getDays` to get number of days between `dueDate` and `LocalDate.now` times the fine rate.
