@@ -78,12 +78,10 @@ class Library {
     this.outBookStatus -= book
   }
 
-  def findLateOutBook():List[(Book, List[outBook])] = {
-    var dueBooks = new ListBuffer[(Book, List[outBook])]()
-    this.outBookStatus.foreach(x =>
-       if (x._2.head.dueDate isBefore LocalDate.now) dueBooks += x
-    )
-    dueBooks.toList
+  def findLateOutBook(): Map[Book, List[outBook]] = {
+    this.outBookStatus.collect {
+      case (k, v) if (v.head.dueDate isBefore LocalDate.now) => (k -> v)
+    }.toMap
   }
 
 }

@@ -96,6 +96,6 @@ class LibrarySpec extends FunSuite with BeforeAndAfterEach {
     library.borrowBook(book1, borrower)
     library.borrowBook(book2, borrower)
     library.outBookStatus(book1) = List(outBook(borrower,today, today.minusDays(1)))
-    library.findLateOutBook() shouldBe List((book1,List(outBook(borrower,today, today.minusDays(1)))))
+    library.findLateOutBook() shouldBe Map(book1 -> List(outBook(borrower,today, today.minusDays(1))))
   }
 }
