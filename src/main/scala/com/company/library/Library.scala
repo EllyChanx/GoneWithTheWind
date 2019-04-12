@@ -2,7 +2,6 @@ package com.company.library
 
 import scala.collection.mutable
 import scala.collection.immutable
-import scala.collection.mutable.ListBuffer
 import java.time.LocalDate
 
 class Library {
@@ -14,26 +13,20 @@ class Library {
     Books.all.map(x => x -> true): _*
   )
 
-  var outBookStatus: mutable.Map[Book, List[outBook]] = mutable.Map[Book, List[outBook]]()
+  var outBook: mutable.Map[Book, List[outBookStatus]] = mutable.Map[Book, List[outBookStatus]]()
   val borrowDate: LocalDate = LocalDate.now
   val dueDate: LocalDate = borrowDate.plusDays(14)
 
-  def findBookByTitle(title: String): List[Book] = {
-    var matchTitleBooks = new ListBuffer[Book]()
-    val matchTitles = this.titleMap.keys.filter(_.contains(title))
-    matchTitles.foreach(title => this.titleMap.get(title) match {
-      case Some(value) => matchTitleBooks ++= value
-    })
-    matchTitleBooks.toList
+  def findBookByTitle(title: String):List[Book] = {
+    this.titleMap.filter(
+      p => p._1.containsSlice(title)
+    ).values.flatten.toList
   }
 
-  def findBookByAuthor(author: String): List[Book] = {
-    var matchAuthorBooks = new ListBuffer[Book]()
-    val matchAuthors = this.authorMap.keys.filter(_.contains(author))
-    matchAuthors.foreach(author => this.authorMap.get(author) match {
-      case Some(value) => matchAuthorBooks ++= value
-    })
-    matchAuthorBooks.toList
+  def findBookByAuthor(author: String): List[Book] ={
+    this.authorMap.filter(
+      p => p._1.containsSlice(author)
+    ).values.flatten.toList
   }
 
   def findBookByIsbn(isbn: String): Book = {
@@ -70,17 +63,15 @@ class Library {
   }
 
   def addOutBook(book: Book, name: String): Unit = {
-    val newStatus = List(outBook(name, borrowDate, dueDate))
-    this.outBookStatus += book -> newStatus
+    val newStatus = List(outBookStatus(name, borrowDate, dueDate))
+    this.outBook += book -> newStatus
   }
 
-  def removeOutBook(book: Book): Unit = {
-    this.outBookStatus -= book
-  }
+  def removeOutBook(book: Book): Unit = this.outBook -= book
 
-  def findLateOutBook(): Map[Book, List[outBook]] = {
-    this.outBookStatus.collect {
-      case (k, v) if (v.head.dueDate isBefore LocalDate.now) => (k -> v)
+  def findLateOutBook(): Map[Book, List[outBookStatus]] = {
+    this.outBook.collect {
+      case (k, v) if v.head.dueDate isBefore LocalDate.now => k -> v
     }.toMap
   }
 

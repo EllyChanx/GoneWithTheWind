@@ -74,28 +74,28 @@ class LibrarySpec extends FunSuite with BeforeAndAfterEach {
 
   test("#addOutBook add borrowed book to outBookStatus") {
     library.addOutBook(book1, borrower)
-    library.outBookStatus.head shouldBe (book1, List(outBook(borrower,LocalDate.now, LocalDate.now.plusDays(14))))
+    library.outBook.head shouldBe (book1, List(outBookStatus(borrower,LocalDate.now, LocalDate.now.plusDays(14))))
   }
 
   test("#removeOutBook remove borrowed book from outBookStatus") {
     library.addOutBook(book1, borrower)
     library.removeOutBook(book1)
-    library.outBookStatus shouldBe Map()
+    library.outBook shouldBe Map()
   }
 
   test("#borrowBook & #returnBook update #outBookStatus") {
     library.borrowBook(book1, borrower)
     library.borrowBook(book2, borrower)
-    library.outBookStatus.head shouldBe (book2, List(outBook(borrower,today, today.plusDays(14))))
-    library.outBookStatus.last shouldBe (book1, List(outBook(borrower,today, today.plusDays(14))))
+    library.outBook.head shouldBe (book2, List(outBookStatus(borrower,today, today.plusDays(14))))
+    library.outBook.last shouldBe (book1, List(outBookStatus(borrower,today, today.plusDays(14))))
     library.returnBook(book1)
-    library.outBookStatus.head shouldBe (book2, List(outBook(borrower,today, today.plusDays(14))))
+    library.outBook.head shouldBe (book2, List(outBookStatus(borrower,today, today.plusDays(14))))
   }
 
   test("#findLateOutBook search due books from #outBookStatus") {
     library.borrowBook(book1, borrower)
     library.borrowBook(book2, borrower)
-    library.outBookStatus(book1) = List(outBook(borrower,today, today.minusDays(1)))
-    library.findLateOutBook() shouldBe Map(book1 -> List(outBook(borrower,today, today.minusDays(1))))
+    library.outBook(book1) = List(outBookStatus(borrower,today, today.minusDays(1)))
+    library.findLateOutBook() shouldBe Map(book1 -> List(outBookStatus(borrower,today, today.minusDays(1))))
   }
 }
