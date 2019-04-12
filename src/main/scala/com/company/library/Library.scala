@@ -55,9 +55,10 @@ class Library {
         if (isAvailable) {
           throw new Exception("Book already on shelf!")
         } else {
+          val returnMsg = s"${book.title} - Return Successfully - Is Book Overdue: ${this.findLateOutBook().contains(book)}"
           this.isBookAvailable(book) = true
           this.removeOutBook(book)
-          s"${book.title} - Return Successfully"
+          returnMsg
         }
     }
   }

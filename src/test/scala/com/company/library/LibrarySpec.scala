@@ -59,7 +59,7 @@ class LibrarySpec extends FunSuite with BeforeAndAfterEach {
     library.isBookAvailable(book1) shouldBe true
     library.borrowBook(book1, borrower)
     library.isBookAvailable(book1) shouldBe false
-    library.returnBook(book1) shouldBe "Da Vinci Code,The - Return Successfully"
+    library.returnBook(book1) shouldBe "Da Vinci Code,The - Return Successfully - Is Book Overdue: false"
     library.isBookAvailable(book1) shouldBe true
   }
 
